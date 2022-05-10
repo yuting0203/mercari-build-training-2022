@@ -29,15 +29,26 @@ def add_item(name: str = Form(...), category: str = Form(...)):
     logger.info(f"Receive item category: {category}")
 
     with open('items.json', 'r+') as jsonfile:
-        item=json.load(jsonfile)
-        jsonfile.seek(0)
-        item['items'].append({
+        items = json.load(jsonfile)
+        items['items'].append({
             'name': name,
             'category': category
         })
-        json.dump(item, jsonfile)
+
+        jsonfile.seek(0)
+        json.dump(items, jsonfile)
         jsonfile.truncate()
+
     return {"message": f"item received: {name}"}
+
+@app.get("/items")
+def get_item():
+    logger.info(f"The list of items")
+
+    with open('items.json', 'r') as jsonfile:
+        items = json.load(jsonfile)
+
+    return items
 
 @app.get("/image/{items_image}")
 async def get_image(items_image):
