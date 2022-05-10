@@ -1,6 +1,7 @@
 import os
 import logging
 import pathlib
+import json
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,9 +24,23 @@ def root():
     return {"message": "Hello, world!"}
 
 @app.post("/items")
-def add_item(name: str = Form(...)):
+def add_item(name: str = Form(...), category: str = Form(...)):
     logger.info(f"Receive item: {name}")
+    logger.info(f"Receive item category: {category}")
+
+    with open('items.json', 'r+') as jsonfile:
+        items = json.load(jsonfile)
+        items['items'].append({
+            'name': name,
+            'category': category
+        })
+
+        jsonfile.seek(0)
+        json.dump(items, jsonfile)
+        jsonfile.truncate()
+
     return {"message": f"item received: {name}"}
+
 
 @app.get("/image/{items_image}")
 async def get_image(items_image):
