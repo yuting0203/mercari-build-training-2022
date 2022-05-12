@@ -53,11 +53,22 @@ def add_item(name: str = Form(...), category: str = Form(...)):
 
 @app.get("/items")
 def get_item():
-    logger.info(f"List all items")
+    logger.info("List all items")
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
     c = conn.cursor()
     c.execute("SELECT * FROM items")
+    items = c.fetchall()
+
+    return {"item":items}
+
+@app.get("/search")
+def get_item(keyword):
+    logger.info(f"Search {keyword} items")
+    conn = sqlite3.connect(DBPATH)
+    conn.row_factory = dict_factory
+    c = conn.cursor()
+    c.execute("SELECT * FROM items WHERE name=?;", [keyword])
     items = c.fetchall()
 
     return {"item":items}
