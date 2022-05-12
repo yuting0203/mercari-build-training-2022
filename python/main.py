@@ -2,9 +2,13 @@ import os
 import logging
 import pathlib
 import json
+import sqlite3
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+
+DBPATH = '../db/mercari.sqlite3'
+
 
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
@@ -19,34 +23,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        if col[0] == 'id':
+            continue
+        d[col[0]] = row[idx]
+
+    return d
+
 @app.get("/")
 def root():
     return {"message": "Hello, world!"}
 
 @app.post("/items")
 def add_item(name: str = Form(...), category: str = Form(...)):
-    logger.info(f"Receive item: {name}")
-    logger.info(f"Receive item category: {category}")
+    logger.info(f"Receive item: {name} in {category}")
 
-    with open('items.json', 'r+') as jsonfile:
-        items = json.load(jsonfile)
-        items['items'].append({
-            'name': name,
-            'category': category
-        })
+    item = (name, category)
 
-        jsonfile.seek(0)
-        json.dump(items, jsonfile)
-        jsonfile.truncate()
+    conn = sqlite3.connect(DBPATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO items VALUES (NULL,?,?)", item)
+    conn.commit()
+
+    conn.close()
 
     return {"message": f"item received: {name}"}
 
 @app.get("/items")
 def get_item():
     logger.info(f"List all items")
-    with open('items.json', 'r') as jsonfile:
-        items = json.load(jsonfile)
-    return items
+    conn = sqlite3.connect(DBPATH)
+    conn.row_factory = dict_factory
+    c = conn.cursor()
+    c.execute("SELECT * FROM items")
+    items = c.fetchall()
+
+    return {"item":items}
 
 @app.get("/image/{items_image}")
 async def get_image(items_image):
