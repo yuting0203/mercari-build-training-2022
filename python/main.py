@@ -68,10 +68,21 @@ def get_item():
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
     c = conn.cursor()
-    c.execute("SELECT * FROM items")
+    c.execute("SELECT name, category, image FROM items")
     items = c.fetchall()
 
     return {"item":items}
+
+@app.get("/items/{item_id}")
+def get_item_info(item_id):
+    logger.info(f"List info of item {item_id}")
+    conn = sqlite3.connect(DBPATH)
+    conn.row_factory = dict_factory
+    c = conn.cursor().execute("SELECT * FROM items WHERE id = ?;", [item_id])
+    item = c.fetchone()
+
+    return item
+
 
 @app.get("/search")
 def get_item(keyword):
