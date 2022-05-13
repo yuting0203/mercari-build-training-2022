@@ -1,1 +1,2 @@
-CREATE TABLE items (id integer PRIMARY KEY AUTOINCREMENT, name text, category text)
+CREATE TABLE items (id integer PRIMARY KEY AUTOINCREMENT, name text, category text, image text);
+CREATE TABLE sqlite_sequence(name,seq);

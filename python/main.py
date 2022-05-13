@@ -3,12 +3,12 @@ import logging
 import pathlib
 import json
 import sqlite3
+import hashlib
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 DBPATH = '../db/mercari.sqlite3'
-
 
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
@@ -32,19 +32,30 @@ def dict_factory(cursor, row):
 
     return d
 
+def sha256_filename(filepath):
+    logger.info(f"Image path: {filepath}")
+
+    filepath = os.path.splitext(filepath)[0]
+    result = hashlib.sha256(filepath.encode("utf-8")).hexdigest()
+    return result
+
 @app.get("/")
 def root():
     return {"message": "Hello, world!"}
 
 @app.post("/items")
-def add_item(name: str = Form(...), category: str = Form(...)):
+def add_item(name: str = Form(...), category: str = Form(...), image: str = Form(...)):
     logger.info(f"Receive item: {name} in {category}")
 
-    item = (name, category)
+    #hash image file name by sha256
+    hash_img = sha256_filename(image) + '.jpg'
+
+    #new item
+    item = (name, category, hash_img)
 
     conn = sqlite3.connect(DBPATH)
     c = conn.cursor()
-    c.execute("INSERT INTO items VALUES (NULL,?,?)", item)
+    c.execute("INSERT INTO items VALUES (NULL,?,?,?)", item)
     conn.commit()
 
     conn.close()
@@ -68,7 +79,7 @@ def get_item(keyword):
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
     c = conn.cursor()
-    c.execute("SELECT * FROM items WHERE name LIKE ?;", ('%'+keyword+'%',))
+    c.execute("SELECT name, category FROM items WHERE name LIKE ?;", ('%'+keyword+'%',))
     items = c.fetchall()
 
     return {"item":items}
