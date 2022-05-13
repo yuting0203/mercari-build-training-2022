@@ -68,7 +68,7 @@ def get_item(keyword):
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
     c = conn.cursor()
-    c.execute("SELECT * FROM items WHERE name=?;", [keyword])
+    c.execute("SELECT * FROM items WHERE name LIKE ?;", ('%'+keyword+'%',))
     items = c.fetchall()
 
     return {"item":items}
