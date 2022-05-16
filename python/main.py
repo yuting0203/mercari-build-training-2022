@@ -4,7 +4,7 @@ import pathlib
 import json
 import sqlite3
 import hashlib
-from fastapi import FastAPI, Form, HTTPException
+from fastapi import FastAPI, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -32,11 +32,11 @@ def dict_factory(cursor, row):
 
     return d
 
-def sha256_filename(filepath):
-    logger.info(f"Image path: {filepath}")
+def sha256_filename(filename):
+    logger.info(f"Image filename: {filename}")
 
-    filepath = os.path.splitext(filepath)[0]
-    result = hashlib.sha256(filepath.encode("utf-8")).hexdigest()
+    filename = os.path.splitext(filename)[0]
+    result = hashlib.sha256(filename.encode("utf-8")).hexdigest()
     return result
 
 @app.get("/")
@@ -44,14 +44,15 @@ def root():
     return {"message": "Hello, world!"}
 
 @app.post("/items")
-def add_item(name: str = Form(...), category: str = Form(...), image: str = Form(...)):
+def add_item(name: str = Form(...), category: str = Form(...), image: UploadFile = Form(...)):
+
     logger.info(f"Receive item: {name} in {category}")
 
-    #hash image file name by sha256
-    hash_img = sha256_filename(image) + '.jpg'
+    #hash image filename by sha256
+    hash_filename = sha256_filename(image.filename) + '.jpg'
 
     #new item
-    item = (name, category, hash_img)
+    item = (name, category, hash_filename)
 
     conn = sqlite3.connect(DBPATH)
     c = conn.cursor()
