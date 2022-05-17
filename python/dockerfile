@@ -1,4 +1,17 @@
-FROM alpine
+#Make sure that you're in mercari-build-training-2022/ directory
+
+FROM python:3.10.4-slim-buster
 
 # STEP4-4では以下は変更しない
-CMD ["python", "-V"]
+
+# syntax=docker/dockerfile:1
+
+WORKDIR /app
+COPY db/ ./db
+COPY python/ ./python
+
+WORKDIR /app/python
+RUN pip3 install -r requirements.txt
+
+
+CMD [ "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "9000"]
