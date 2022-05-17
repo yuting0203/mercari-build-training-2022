@@ -12,7 +12,7 @@ DBPATH = '../db/mercari.sqlite3'
 
 app = FastAPI()
 logger = logging.getLogger("uvicorn")
-logger.level = logging.INFO
+logger.level = logging.DEBUG
 images = pathlib.Path(__file__).parent.resolve() / "image"
 origins = [ os.environ.get('FRONT_URL', 'http://localhost:3000') ]
 app.add_middleware(
