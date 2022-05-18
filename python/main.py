@@ -26,8 +26,6 @@ app.add_middleware(
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
-        if col[0] == 'id':
-            continue
         d[col[0]] = row[idx]
 
     return d
@@ -51,11 +49,19 @@ def add_item(name: str = Form(...), category: str = Form(...), image: UploadFile
     #hash image filename by sha256
     hash_filename = sha256_filename(image.filename) + '.jpg'
 
-    #new item
-    item = (name, category, hash_filename)
-
+    #fetch category id
     conn = sqlite3.connect(DBPATH)
     c = conn.cursor()
+    category_id = c.execute("SELECT id FROM category WHERE name=?", (category,)).fetchone()
+
+    if category_id is None:
+        c.execute("INSERT INTO category(name) VALUES(?)", (category,))
+        conn.commit()
+        category_id = c.execute("SELECT id FROM category WHERE name=?", (category,)).fetchone()
+
+
+    #new item
+    item = (name, category_id[0], hash_filename)
     c.execute("INSERT INTO items VALUES (NULL,?,?,?)", item)
     conn.commit()
 
@@ -69,7 +75,7 @@ def get_item():
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
     c = conn.cursor()
-    c.execute("SELECT name, category, image FROM items")
+    c.execute("SELECT items.name, category.name AS category, items.image_filename FROM items INNER JOIN category ON items.category_id = category.id")
     items = c.fetchall()
 
     return {"item":items}
@@ -79,11 +85,11 @@ def get_item_info(item_id):
     logger.info(f"List info of item {item_id}")
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
-    c = conn.cursor().execute("SELECT * FROM items WHERE id = ?;", [item_id])
+    c = conn.cursor()
+    c.execute("SELECT items.name, category.name AS category, items.image_filename FROM items INNER JOIN category ON items.category_id = category.id WHERE items.id = ?;", [item_id])
     item = c.fetchone()
 
     return item
-
 
 @app.get("/search")
 def get_item(keyword):
@@ -91,7 +97,7 @@ def get_item(keyword):
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
     c = conn.cursor()
-    c.execute("SELECT name, category FROM items WHERE name LIKE ?;", ('%'+keyword+'%',))
+    c.execute("SELECT items.name, category.name AS category, items.image_filename FROM items INNER JOIN category ON items.category_id = category.id WHERE items.name LIKE ?;", ('%'+keyword+'%',))
     items = c.fetchall()
 
     return {"item":items}
