@@ -4,30 +4,38 @@
 
 .Title {
   background-color: #222427;
-  min-height: 8vh;
+  height: 10vh;
+  min-width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: left;
   font-size: calc(15px + 1vmin);
   color: white;
+  position: fixed;
+  top: 0;
+  z-index: 1;
 }
 
 .Listing {
   background-color: #66cbed;
-  min-height: 8vh;
+  height: 8vh;
+  min-width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: left;
   font-size: calc(10px + 1vmin);
   color: white;
+  position: fixed;
+  top: 10%;
+  z-index: 1;
 }
 
 .ItemList {
   background-color: #f02a07;
   min-height: 8vh;
-  min-width: 30vh;
+  min-width: 20vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,7 +48,10 @@
 
 .GridLayout {
   background-color: #f02a07;
-  align-items: baseline;
+  top: 17vh;
+  min-width: 100vw;
+  position: relative;
+  align-items: center;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 200px;
