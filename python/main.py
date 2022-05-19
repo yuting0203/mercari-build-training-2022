@@ -75,10 +75,10 @@ def get_item():
     conn = sqlite3.connect(DBPATH)
     conn.row_factory = dict_factory
     c = conn.cursor()
-    c.execute("SELECT items.name, category.name AS category, items.image_filename FROM items INNER JOIN category ON items.category_id = category.id")
+    c.execute("SELECT items.id, items.name, category.name AS category, items.image_filename FROM items INNER JOIN category ON items.category_id = category.id")
     items = c.fetchall()
 
-    return {"item":items}
+    return {"items":items}
 
 @app.get("/items/{item_id}")
 def get_item_info(item_id):
