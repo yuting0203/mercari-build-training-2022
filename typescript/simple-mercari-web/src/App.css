@@ -58,6 +58,42 @@
   column-gap: 30px;
 }
 
+.button:hover {
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  cursor: pointer;
+}
+
+input[type=text] {
+  border: 1.5px solid #a6a6a6;
+  border-radius: 5px;
+  height: 4vh;
+  width: 20vw;
+  position: relative;
+  top: 10px;
+  background-color: #e7e8e6;
+}
+
+input[type=file]{
+  border: 1.5px solid #a6a6a6;
+  border-radius: 5px;
+  height: 3vh;
+  position: relative;
+  top: 10px;
+  left: 5px;
+  font-family: Papyrus;
+}
+
+button[type=submit]{
+  border-radius: 50px;
+  height: 4vh;
+  width: 10vw;
+  position: relative;
+  top: 10px;
+  left: 10px;
+  background-color: #fcfcfc;
+  font-family: Papyrus;
+}
+
 .App-link {
   color: #61dafb;
 }
