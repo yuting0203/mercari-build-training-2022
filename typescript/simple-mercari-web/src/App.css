@@ -9,7 +9,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: left;
-  font-size: calc(10px + 1vmin);
+  font-size: calc(15px + 1vmin);
   color: white;
 }
 
@@ -27,6 +27,7 @@
 .ItemList {
   background-color: #f02a07;
   min-height: 8vh;
+  min-width: 30vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,6 +36,15 @@
   font-family: Papyrus;
   font-weight: bold;
   color: white;
+}
+
+.GridLayout {
+  background-color: #f02a07;
+  align-items: baseline;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 200px;
+  column-gap: 30px;
 }
 
 .App-link {
