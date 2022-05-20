@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  api:
+    #(opt.1) image: build2022/app:latest
+    #(opt.2)
+    build:
+      context: ./python
+      dockerfile: dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      - FRONT_URL=http://localhost:3000
+  web:
+    #(opt.1) image: build2022/web:latest
+    #(opt.2)
+    build:
+      context: ./typescript/simple-mercari-web
+      dockerfile: dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://localhost:9000
