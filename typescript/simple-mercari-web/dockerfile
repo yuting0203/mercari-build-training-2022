@@ -1,7 +1,9 @@
+#Make sure that you're in mercari-build-training-2022/ directory
 FROM node:16-alpine
 WORKDIR /app
 
-COPY . .
+COPY ./typescript/simple-mercari-web .
 
-CMD ["npm", "ci"]
+RUN npm ci
+
 CMD ["npm", "start"]

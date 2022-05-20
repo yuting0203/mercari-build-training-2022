@@ -4,13 +4,12 @@ FROM python:3.10.4-slim-buster
 
 # STEP4-4では以下は変更しない
 
-# syntax=docker/dockerfile:1
+COPY db/ ./db
 
 WORKDIR /app
-COPY db/ ./db
-COPY python/ ./python
 
-WORKDIR /app/python
+COPY python/ .
+
 RUN pip3 install -r requirements.txt
 
 
